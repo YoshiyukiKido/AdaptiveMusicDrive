@@ -55,7 +55,9 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 
 import java.util.Locale
-
+import org.maplibre.android.MapLibre
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.Color
 
 enum class ExperimentMode {
     NO_MUSIC,
@@ -182,6 +184,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
+        // ============================================
+        // MapLibreを最初に初期化
+        // ============================================
+        MapLibre.getInstance(this)
 
         // GPS
         fusedLocationClient =
@@ -322,12 +329,21 @@ class MainActivity : ComponentActivity() {
             // ----------------------------------------------------
 
             Card(
+                /*
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(12.dp)
                     .widthIn(max = 340.dp)
-            ) {
 
+                 */
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(12.dp)
+                    .widthIn(max = 340.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.7f)
+                )
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
