@@ -41,9 +41,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-
 import kotlinx.coroutines.launch
-
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.location.LocationComponent
@@ -53,6 +51,9 @@ import org.maplibre.android.location.modes.CameraMode
 import org.maplibre.android.location.modes.RenderMode
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
 
 import java.util.Locale
 import org.maplibre.android.MapLibre
@@ -407,11 +408,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-
                     // ============================================
                     // Adaptive
                     // ============================================
-
                     Row(
                         verticalAlignment =
                             Alignment.CenterVertically
@@ -433,41 +432,34 @@ class MainActivity : ComponentActivity() {
                         Text("Adaptive")
                     }
 
-
                     Spacer(
                         modifier = Modifier.height(8.dp)
                     )
 
-
                     // ============================================
                     // Driving information
                     // ============================================
-
                     Text(
                         "Speed: %.1f km/h".format(
                             Locale.US,
                             speedKmh
                         )
                     )
-
                     Text(
                         "Speed limit: %.1f km/h".format(
                             Locale.US,
                             speedLimitKmh
                         )
                     )
-
                     Text(
                         "Δv: %.1f km/h".format(
                             Locale.US,
                             speedLimitKmh - speedKmh
                         )
                     )
-
                     Text(
                         "Road: ${roadName ?: "-"}"
                     )
-
                     Text(
                         "Speed-limit source: " +
                                 if (speedLimitFromOsm) {
@@ -477,42 +469,32 @@ class MainActivity : ComponentActivity() {
                                 }
                     )
 
-
                     if (selectedBpm != null) {
-
                         Text(
                             "Music: $selectedBpm BPM"
                         )
-
                     } else {
-
                         Text(
                             "Music: OFF"
                         )
                     }
 
-
                     Spacer(
                         modifier = Modifier.height(8.dp)
                     )
 
-
                     // ============================================
                     // START
                     // ============================================
-
                     Button(
                         enabled = !isExperimentRunning,
                         modifier =
-                            Modifier.fillMaxWidth(),
-                        onClick = {
-
+                            //Modifier.fillMaxWidth(),
+                            Modifier.width(100.dp).height(42.dp),
+                    onClick = {
                             if (hasLocationPermission()) {
-
                                 startExperiment()
-
                             } else {
-
                                 permissionLauncher.launch(
                                     arrayOf(
                                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -522,24 +504,20 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) {
-
                         Text("START")
                     }
-
-
                     Spacer(
                         modifier = Modifier.height(4.dp)
                     )
 
-
                     // ============================================
                     // STOP
                     // ============================================
-
                     Button(
                         enabled = isExperimentRunning,
                         modifier =
-                            Modifier.fillMaxWidth(),
+                            //Modifier.fillMaxWidth(),
+                            Modifier.width(100.dp).height(42.dp),
                         onClick = {
 
                             stopExperiment()

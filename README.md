@@ -1,10 +1,10 @@
 # AdaptiveMusicDrive
 
-AdaptiveMusicDrive is an Android application for research on adaptive music presentation during driving.
+AdaptiveMusicDrive is an Android application developed for research on adaptive music presentation during driving.
 
-The application acquires the vehicle's current position and speed using smartphone GPS, obtains road speed-limit information from OpenStreetMap-based data, and changes the tempo of the played music according to the relationship between the current vehicle speed and the road speed limit.
+The application acquires the vehicle's current position and speed using smartphone GPS, obtains road speed-limit information from OpenStreetMap-based data, and controls music playback according to the experimental condition.
 
-The application is intended primarily for experimental and research use.
+The application is primarily intended as a research prototype for evaluating the technical feasibility and potential effects of adaptive music presentation during driving.
 
 ## Features
 
@@ -12,25 +12,25 @@ The application is intended primarily for experimental and research use.
 - Current-location display using MapLibre
 - Map display using OpenFreeMap
 - Road speed-limit acquisition using OpenStreetMap data
-- Adaptive music playback based on vehicle speed and road speed limit
 - Three experimental conditions:
   - No Music
-  - Fixed Tempo Music
+  - Fixed-Tempo Music
   - Adaptive Music
-- CSV logging of driving and music-playback data
-- Recording of music switching events
+- Automatic music playback using AndroidX Media3 / ExoPlayer
+- CSV logging of driving and playback data
+- Recording of music start, stop, and switching events
 - GPS accuracy logging
-- START/STOP control for driving experiments
+- START / STOP control for driving experiments
 
 ## Experimental Conditions
 
-The application supports the following three experimental conditions.
+The application supports three experimental conditions.
 
-### No Music
+### 1. No Music
 
 No music is played during the experiment.
 
-### Fixed Tempo Music
+### 2. Fixed-Tempo Music
 
 Music with a fixed tempo is played throughout the experiment.
 
@@ -40,9 +40,9 @@ The current implementation uses:
 80 BPM
 ```
 
-as the fixed-tempo condition.
+for the fixed-tempo condition.
 
-### Adaptive Music
+### 3. Adaptive Music
 
 The music tempo is automatically selected according to the difference between the road speed limit and the current vehicle speed.
 
@@ -54,13 +54,15 @@ Let
 
 The current tempo-selection rules are:
 
-| Condition | Selected Tempo |
+| Driving condition | Tempo |
 |---|---:|
 | Δv >= 10 km/h | 120 BPM |
 | 5 km/h <= Δv < 10 km/h | 80 BPM |
 | Δv < 5 km/h | 60 BPM |
 
-These tempo values are currently used as representative slow, medium, and fast tempo conditions for experimental evaluation.
+The 60, 80, and 120 BPM values are used as representative slow, medium, and fast tempo categories for experimental evaluation.
+
+These values are not intended to represent universally optimal music tempos for driving.
 
 ## System Overview
 
@@ -70,25 +72,28 @@ The basic processing flow is:
 Smartphone GPS
       |
       v
-Current Location / Vehicle Speed
+Current Position / Vehicle Speed
       |
-      +--------------------+
-      |                    |
-      v                    v
-OpenStreetMap         Vehicle Speed
-Speed Limit               |
-      |                    |
-      +---------+----------+
-                |
-                v
-        Driving State
-        Classification
-                |
-                v
-        Tempo Selection
-                |
-                v
-          Music Playback
+      +-----------------------+
+      |                       |
+      v                       v
+OpenStreetMap            Vehicle Speed
+Speed-Limit Data              |
+      |                       |
+      +-----------+-----------+
+                  |
+                  v
+          Driving-State
+          Classification
+                  |
+                  v
+          Tempo Selection
+                  |
+                  v
+           Music Playback
+                  |
+                  v
+             CSV Logging
 ```
 
 ## Technologies
@@ -115,9 +120,9 @@ https://tiles.openfreemap.org/styles/liberty
 
 Road information is based on OpenStreetMap data.
 
-The application attempts to obtain the `maxspeed` attribute of roads near the current GPS position.
+The application attempts to obtain the `maxspeed` attribute of the road near the current GPS position.
 
-If speed-limit information cannot be obtained, a predefined fallback speed limit may be used.
+When explicit speed-limit information cannot be obtained, a predefined fallback value may be used.
 
 The current fallback value is:
 
@@ -125,13 +130,41 @@ The current fallback value is:
 45 km/h
 ```
 
-The road-matching and speed-limit acquisition methods are under development and may be improved in future versions.
+Road matching and speed-limit acquisition are experimental components and may be improved in future versions.
+
+## Music Files
+
+Music files are not included in this repository.
+
+For experimental use, MP3 files can be placed under the following directories:
+
+```text
+app/src/main/assets/
+├── bpm60/
+│   ├── song01.mp3
+│   ├── song02.mp3
+│   └── ...
+├── bpm80/
+│   ├── song01.mp3
+│   ├── song02.mp3
+│   └── ...
+└── bpm120/
+    ├── song01.mp3
+    ├── song02.mp3
+    └── ...
+```
+
+Each directory contains music assigned to the corresponding tempo category.
+
+For controlled experiments, the set of music files should be fixed across participants in order to reduce differences caused by musical content.
+
+Users are responsible for ensuring that they have appropriate rights or permissions to use the audio files placed in these directories.
 
 ## CSV Logging
 
 A new CSV log file is created when an experiment is started.
 
-The log contains information such as:
+The log records information such as:
 
 ```text
 datetime
@@ -143,38 +176,39 @@ speed_kmh
 speed_limit_kmh
 delta_v
 bpm
+music_file
 music_event
 road_name
 speed_limit_source
 ```
 
-Example:
+An example record is:
 
 ```csv
-datetime,condition,latitude,longitude,gps_accuracy_m,speed_kmh,speed_limit_kmh,delta_v,bpm,music_event,road_name,speed_limit_source
-2026-10-31 18:20:01.100,ADAPTIVE,34.780000,135.500000,3.2,30.1,50.0,19.9,120,START,"Example Road",OSM
-2026-10-31 18:20:02.100,ADAPTIVE,34.780100,135.500100,3.1,34.2,50.0,15.8,120,NONE,"Example Road",OSM
-2026-10-31 18:20:03.100,ADAPTIVE,34.780200,135.500200,3.0,42.0,50.0,8.0,80,SWITCH,"Example Road",OSM
+datetime,condition,latitude,longitude,gps_accuracy_m,speed_kmh,speed_limit_kmh,delta_v,bpm,music_file,music_event,road_name,speed_limit_source
+2026-11-03 19:20:01.100,ADAPTIVE,34.780000,135.500000,3.2,30.1,50.0,19.9,120,bpm120/song01.mp3,START,"Example Road",OSM
+2026-11-03 19:20:02.100,ADAPTIVE,34.780100,135.500100,3.1,34.2,50.0,15.8,120,bpm120/song01.mp3,NONE,"Example Road",OSM
+2026-11-03 19:20:03.100,ADAPTIVE,34.780200,135.500200,3.0,42.0,50.0,8.0,80,bpm80/song01.mp3,SWITCH,"Example Road",OSM
 ```
 
 ### Music Events
 
-The `music_event` field records changes in music playback.
+The `music_event` field indicates changes in music playback.
 
 | Event | Description |
 |---|---|
 | `START` | Music playback starts |
-| `SWITCH` | Music tempo changes |
+| `SWITCH` | Music or tempo changes |
 | `STOP` | Music playback stops |
-| `NONE` | No change in music playback |
+| `NONE` | No playback change |
 
-This information can be used to calculate music-switching frequency and analyze vehicle speed at each switching point.
+This information can be used to analyze switching frequency and vehicle behavior around music-switching points.
 
 ## CSV File Location
 
-CSV files are currently stored in the application-specific Documents directory.
+CSV files are currently stored in the application's external Documents directory.
 
-Typical location:
+A typical location is:
 
 ```text
 /storage/emulated/0/Android/data/
@@ -185,28 +219,8 @@ files/Documents/
 Example filename:
 
 ```text
-driving_log_20261031_182001.csv
+driving_log_20261103_192001.csv
 ```
-
-## Music Files
-
-Music files are not included in this repository.
-
-Place the required audio files in:
-
-```text
-app/src/main/res/raw/
-```
-
-The current implementation expects files corresponding to:
-
-```text
-bpm60.mp3
-bpm80.mp3
-bpm120.mp3
-```
-
-Music files should only be used when appropriate copyright and licensing permissions have been obtained.
 
 ## Required Android Permissions
 
@@ -227,54 +241,64 @@ This application is intended for research involving driving behavior and adaptiv
 For real-road experiments:
 
 - Participants should possess a valid driver's license.
-- Experiments should use appropriately insured vehicles.
-- Experiments should not be conducted when a participant is under the influence of alcohol, is unwell, fatigued, or sleep-deprived.
-- Experiments should be suspended under unsafe weather or traffic conditions.
+- Appropriately insured vehicles should be used.
+- Experiments should not be conducted when a participant has consumed alcohol or is unwell, fatigued, or sleep-deprived.
+- Experiments should be suspended when weather, road, or traffic conditions make safe driving difficult.
 - Drivers should not operate smartphones or experimental equipment while driving.
-- Researchers should not instruct participants to exceed speed limits or perform unsafe driving maneuvers.
+- Researchers should not instruct participants to exceed speed limits or perform unusual acceleration or deceleration.
 - Experiments should be terminated immediately in the event of an accident or other safety-related incident.
-- Applicable institutional ethics-review procedures should be followed before conducting experiments involving human participants.
+- Appropriate institutional ethics-review and informed-consent procedures should be completed before experiments involving human participants.
+
+Safe driving and compliance with applicable traffic regulations must always take priority over the experiment.
 
 ## Privacy
 
-The application may record GPS coordinates, timestamps, vehicle speed, road speed limits, and music-playback information.
+The application may record:
 
-Because combinations of location and time information may potentially identify participants, experimental data should be handled appropriately.
+- GPS coordinates
+- Date and time
+- Vehicle speed
+- GPS accuracy
+- Road speed limits
+- Road information
+- Music tempo
+- Music playback events
 
-Researchers should avoid publishing raw GPS trajectories or other information that could identify individual participants.
+A combination of location and time information may potentially identify an individual or their travel history.
 
-## Current Research Status
+Research data should therefore be stored and handled appropriately. Raw GPS trajectories and other potentially identifying information should not be publicly released without appropriate processing.
 
-The current version is designed primarily to evaluate the technical feasibility of adaptive music playback during real-world driving.
+## Research Evaluation
 
-The implementation itself does not establish that adaptive music improves driving safety, speed compliance, or driver behavior.
-
-Controlled experiments using multiple participants and comparison conditions are required to evaluate behavioral effects.
-
-Planned experimental conditions include:
+The current system is intended to support controlled experiments using the following three conditions:
 
 ```text
 No Music
-Fixed Tempo Music
+Fixed-Tempo Music
 Adaptive Music
 ```
 
 Potential evaluation metrics include:
 
+- Mean vehicle speed
 - Speed variance
 - Standard deviation of vehicle speed
 - Mean deviation from the speed limit
-- Duration of speed-limit exceedance
+- Speed-limit exceedance duration
 - Percentage of time exceeding the speed limit
 - Music switching frequency
 - GPS accuracy
-- System response and switching latency
+- Music-switching latency
+
+The current implementation itself does not establish that adaptive music improves driving safety or speed compliance. Controlled evaluation with multiple participants is required to investigate behavioral effects.
 
 ## Build Environment
 
 The project is developed using Android Studio.
 
-Main development components include:
+A recent Android SDK and Java 17-compatible build environment are recommended.
+
+Main dependencies include:
 
 ```text
 Kotlin
@@ -284,20 +308,9 @@ MapLibre Android SDK
 AndroidX Media3
 ```
 
-A recent Android SDK and Java 17-compatible build environment are recommended.
-
 ## Repository Notes
 
-The following files should not normally be committed to the repository:
-
-```text
-local.properties
-*.jks
-*.keystore
-*.mp3
-experimental CSV data
-participant data
-```
+Audio files, experimental data, signing keys, and local configuration files should normally not be committed to the repository.
 
 Example `.gitignore` entries:
 
@@ -311,27 +324,30 @@ local.properties
 *.jks
 *.keystore
 
-app/src/main/res/raw/*.mp3
+app/src/main/assets/bpm60/*.mp3
+app/src/main/assets/bpm80/*.mp3
+app/src/main/assets/bpm120/*.mp3
 
 *.csv
 data/
 logs/
 ```
 
+If empty BPM directories need to be retained in Git, a `.gitkeep` file can be placed in each directory.
+
 ## Disclaimer
 
-This software is a research prototype.
+AdaptiveMusicDrive is a research prototype.
 
-It is not intended to replace traffic regulations, vehicle safety systems, navigation systems, or driver judgment.
+It is not a vehicle safety system and is not intended to replace traffic regulations, navigation systems, vehicle safety systems, or driver judgment.
 
-Drivers must always comply with applicable traffic laws and prioritize safe driving.
+The driver is responsible for complying with applicable traffic laws and for operating the vehicle safely.
 
 ## Author
 
 Yoshiyuki Kido  
-Faculty of Business Data Science  
-Kansai University
 
 ## License
-
-License information will be added in a future release.
+This software is released under the MIT License.
+See the `LICENSE` file for details.
+Copyright (c) 2026 Yoshiyuki Kido
