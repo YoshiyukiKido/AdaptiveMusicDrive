@@ -60,6 +60,17 @@ import org.maplibre.android.MapLibre
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.graphics.Color
 
+// for Speed Limit Sign by Kido, 6, Nov. 2026
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.shadow
+//import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
+
 enum class ExperimentMode {
     NO_MUSIC,
     FIXED_TEMPO,
@@ -283,6 +294,52 @@ class MainActivity : ComponentActivity() {
     // ============================================================
     // Compose screen
     // ============================================================
+    @Composable
+    fun SpeedLimitSign(
+        speedLimitKmh: Double,
+        modifier: Modifier = Modifier
+    ) {
+        Box(
+            modifier = modifier
+                .size(82.dp)
+                .shadow(
+                    elevation = 6.dp,
+                    shape = CircleShape
+                )
+                .background(
+                    color = Color.White,
+                    shape = CircleShape
+                )
+                .padding(5.dp),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = Color.White,
+                        shape = CircleShape
+                    )
+                    .border(
+                        width = 7.dp,
+                        color = Color.Red,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Text(
+                    text = speedLimitKmh
+                        .roundToInt()
+                        .toString(),
+                    color = Color.Black,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 
     @Composable
     fun MainScreen() {
@@ -324,6 +381,19 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize()
             )
 
+            // ------------------------------------------------
+            // 速度制限標識
+            // ------------------------------------------------
+
+            SpeedLimitSign(
+                speedLimitKmh = speedLimitKmh,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        top = 16.dp,
+                        end = 16.dp
+                    )
+            )
 
             // ----------------------------------------------------
             // Control panel
