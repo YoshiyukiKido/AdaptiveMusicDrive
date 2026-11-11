@@ -143,7 +143,7 @@ Because the endpoint contains a personal API key, the URL should **not** be writ
 Add the following entry to the `local.properties` file located in the root directory of the Android project:
 
 ```properties
-NEXTGIS_OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
+OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
 ```
 
 For example, the project structure should be:
@@ -162,7 +162,7 @@ The `local.properties` file may already contain the Android SDK location:
 
 ```properties
 sdk.dir=/Users/USERNAME/Library/Android/sdk
-NEXTGIS_OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
+OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
 ```
 
 The application reads this value at build time and makes it available as:

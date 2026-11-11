@@ -26,7 +26,7 @@ android {
 
         val overpassUrl =
             localProperties.getProperty(
-                "NEXTGIS_OVERPASS_URL",
+                "OVERPASS_URL",
                 ""
             )
 
