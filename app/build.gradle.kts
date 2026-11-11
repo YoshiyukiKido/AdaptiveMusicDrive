@@ -1,4 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +23,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val overpassUrl =
+            localProperties.getProperty(
+                "NEXTGIS_OVERPASS_URL",
+                ""
+            )
+
+        buildConfigField(
+            "String",
+            "OVERPASS_URL",
+            "\"$overpassUrl\""
+        )
     }
 
     buildTypes {
@@ -35,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

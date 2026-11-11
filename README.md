@@ -132,6 +132,61 @@ The current fallback value is:
 
 Road matching and speed-limit acquisition are experimental components and may be improved in future versions.
 
+
+## Overpass API Configuration
+
+AdaptiveMusicDrive obtains road and speed-limit information using the Overpass API.
+
+The current implementation uses a NextGIS Overpass API endpoint.  
+Because the endpoint contains a personal API key, the URL should **not** be written directly in the source code or committed to the Git repository.
+
+Add the following entry to the `local.properties` file located in the root directory of the Android project:
+
+```properties
+NEXTGIS_OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
+```
+
+For example, the project structure should be:
+
+```text
+AdaptiveMusicDrive/
+├── app/
+├── build.gradle.kts
+├── settings.gradle.kts
+├── gradle.properties
+├── local.properties
+└── ...
+```
+
+The `local.properties` file may already contain the Android SDK location:
+
+```properties
+sdk.dir=/Users/USERNAME/Library/Android/sdk
+NEXTGIS_OVERPASS_URL=https://overpass.nextgis.com/YOUR_API_KEY/api/interpreter
+```
+
+The application reads this value at build time and makes it available as:
+
+```kotlin
+BuildConfig.OVERPASS_URL
+```
+
+### Important
+
+Do not commit `local.properties` to GitHub because it may contain personal API keys or other local configuration information.
+
+Make sure the following entry is included in `.gitignore`:
+
+```gitignore
+local.properties
+```
+
+A valid NextGIS Overpass API key must be obtained separately before building and running the application.
+
+If `NEXTGIS_OVERPASS_URL` is not configured, road speed-limit information cannot be retrieved from the configured Overpass API and the application may use its fallback speed-limit value.
+
+
+
 ## Music Files
 
 Music files are not included in this repository.

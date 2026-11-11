@@ -59,9 +59,7 @@ class MusicPlayer(
         player.stop()
         player.clearMediaItems()
 
-        val mediaItem =
-            MediaItem.fromUri(uri)
-
+        val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()
         player.play()
@@ -71,8 +69,8 @@ class MusicPlayer(
     }
 
     fun stop() {
-        player.stop()
-
+        player.pause()
+        player.seekTo(0)
         currentBpm = null
         currentFile = null
     }

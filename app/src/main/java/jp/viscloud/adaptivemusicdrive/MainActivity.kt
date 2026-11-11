@@ -70,6 +70,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
+import androidx.compose.foundation.layout.statusBarsPadding
 
 enum class ExperimentMode {
     NO_MUSIC,
@@ -389,8 +390,9 @@ class MainActivity : ComponentActivity() {
                 speedLimitKmh = speedLimitKmh,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
+                    .statusBarsPadding()
                     .padding(
-                        top = 16.dp,
+                        top = 12.dp,
                         end = 16.dp
                     )
             )
